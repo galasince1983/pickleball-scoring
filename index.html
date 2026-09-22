@@ -1,0 +1,1406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>The Pickleball Crew Court Draw</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Karla:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --ground:#ecefe7;
+    --panel:#fbfcf9;
+    --panel-2:#f2f5ed;
+    --ink:#17241e;
+    --soft:#5d6c63;
+    --line:#d3dacd;
+    --line-strong:#b9c3b2;
+    --court:#2f6b4f;
+    --court-ink:#ffffff;
+    --accent:#c4501f;
+    --chip:#e2e8da;
+    --focus:#2f6b4f;
+    --cell-zero:#f2f5ed;
+    --cell-ok:#d7e7dd;
+    --cell-rep:#f3dccf;
+    --win:#dcebe1;
+    --pending:#f6ead9;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#111611;
+      --panel:#1a211b;
+      --panel-2:#212a22;
+      --ink:#e7ede5;
+      --soft:#9aa89c;
+      --line:#2d382f;
+      --line-strong:#3d4a3f;
+      --court:#79b892;
+      --court-ink:#10180f;
+      --accent:#e8814e;
+      --chip:#263026;
+      --focus:#79b892;
+      --cell-zero:#1f271f;
+      --cell-ok:#27392c;
+      --cell-rep:#4a3020;
+      --win:#27392c;
+      --pending:#382a1c;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#111611;
+    --panel:#1a211b;
+    --panel-2:#212a22;
+    --ink:#e7ede5;
+    --soft:#9aa89c;
+    --line:#2d382f;
+    --line-strong:#3d4a3f;
+    --court:#79b892;
+    --court-ink:#10180f;
+    --accent:#e8814e;
+    --chip:#263026;
+    --focus:#79b892;
+    --cell-zero:#1f271f;
+    --cell-ok:#27392c;
+    --cell-rep:#4a3020;
+    --win:#27392c;
+    --pending:#382a1c;
+    color-scheme:dark;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--ground);
+    color:var(--ink);
+    font-family:"Karla","Helvetica Neue",Arial,sans-serif;
+    font-size:15px;
+    line-height:1.5;
+    padding-block:28px 56px;
+    padding-left:18px;
+    padding-right:18px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+
+  .masthead{display:flex;flex-direction:column;gap:6px}
+  .eyebrow{
+    font-family:"Oswald",Impact,sans-serif;font-weight:500;font-size:12px;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--accent);
+  }
+  h1{
+    font-family:"Oswald",Impact,sans-serif;font-weight:600;
+    font-size:clamp(30px,7vw,44px);line-height:1.02;letter-spacing:.01em;
+    text-transform:uppercase;margin:0;text-wrap:balance;
+  }
+  .dek{margin:2px 0 0;color:var(--soft);max-width:60ch}
+
+  .panel{
+    background:var(--panel);border:1px solid var(--line);border-radius:6px;
+    padding:18px;display:flex;flex-direction:column;gap:16px;
+  }
+  .panel h2{
+    font-family:"Oswald",Impact,sans-serif;font-weight:500;font-size:13px;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--soft);
+    margin:0;padding-bottom:10px;border-bottom:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  }
+  .panel h2 em{font-style:normal;letter-spacing:.02em;text-transform:none;font-size:12px}
+  label{display:block;font-weight:700;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--soft);margin-bottom:6px}
+  .hint{font-size:12.5px;color:var(--soft);margin:6px 0 0}
+
+  textarea,input[type="number"]{
+    width:100%;font-family:inherit;font-size:15px;color:var(--ink);
+    background:var(--panel-2);border:1px solid var(--line-strong);border-radius:4px;
+    padding:9px 10px;
+  }
+  textarea{min-height:132px;resize:vertical;line-height:1.55}
+  input[type="number"]{font-variant-numeric:tabular-nums}
+  :is(textarea,input,button,select):focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+
+  .seg{display:flex;border:1px solid var(--line-strong);border-radius:4px;overflow:hidden}
+  .seg button{
+    flex:1;font-family:"Oswald",Impact,sans-serif;font-size:14px;letter-spacing:.05em;
+    background:var(--panel-2);color:var(--soft);border:0;padding:9px 6px;cursor:pointer;white-space:nowrap;
+  }
+  .seg button + button{border-left:1px solid var(--line-strong)}
+  .seg button[aria-pressed="true"]{background:var(--court);color:var(--court-ink)}
+
+  .stepper{display:flex;border:1px solid var(--line-strong);border-radius:4px;overflow:hidden}
+  .stepper button{
+    width:40px;background:var(--panel-2);color:var(--ink);border:0;cursor:pointer;
+    font-size:19px;line-height:1;font-family:"Oswald",Impact,sans-serif;
+  }
+  .stepper .val{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:var(--panel-2);border-left:1px solid var(--line-strong);border-right:1px solid var(--line-strong);
+    padding:4px 0;
+  }
+  .stepper .val b{font-family:"Oswald",Impact,sans-serif;font-size:22px;line-height:1;font-variant-numeric:tabular-nums}
+  .stepper .val span{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
+
+  .go{
+    font-family:"Oswald",Impact,sans-serif;font-size:17px;letter-spacing:.1em;text-transform:uppercase;
+    background:var(--court);color:var(--court-ink);border:0;border-radius:4px;
+    padding:13px 20px;cursor:pointer;width:100%;
+  }
+  .go:hover{filter:brightness(1.08)}
+  .warn{color:var(--accent);font-weight:700;font-size:13.5px}
+
+  .notice{
+    border:1px dashed var(--line-strong);border-radius:6px;padding:10px 14px;
+    font-size:13px;color:var(--soft);background:var(--panel-2);
+  }
+  .notice b{color:var(--accent)}
+
+  .summary{
+    display:flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:6px;
+    background:var(--panel);overflow:hidden;
+  }
+  .stat{flex:1 1 128px;padding:12px 14px;border-right:1px solid var(--line)}
+  .stat:last-child{border-right:0}
+  .stat b{display:block;font-family:"Oswald",Impact,sans-serif;font-size:24px;line-height:1.1;font-variant-numeric:tabular-nums}
+  .stat span{font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--soft)}
+
+  .quality{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{
+    display:inline-flex;align-items:center;gap:7px;font-size:12.5px;
+    background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:5px 12px;
+  }
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--court);flex:none}
+  .tag.bad .dot{background:var(--accent)}
+
+  .round{border-top:1px solid var(--line-strong);padding-top:14px;display:flex;flex-direction:column;gap:10px}
+  .round-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .rnum{font-family:"Oswald",Impact,sans-serif;font-size:19px;letter-spacing:.09em;text-transform:uppercase}
+  .rtime{font-size:12px;color:var(--soft);font-variant-numeric:tabular-nums}
+  .rdone{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--court);font-weight:700}
+  .rdone.part{color:var(--accent)}
+  .courts{display:grid;grid-template-columns:repeat(auto-fit,minmax(252px,1fr));gap:10px}
+  .court{background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:11px 13px 12px}
+  .court.half{border-color:var(--accent)}
+  .clabel{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--soft);font-weight:700;margin-bottom:8px;display:flex;justify-content:space-between;gap:8px}
+  .clabel span.state{letter-spacing:.04em;text-transform:none;font-weight:400}
+  .clabel span.state.half{color:var(--accent);font-weight:700}
+  .teamrow{display:flex;align-items:center;gap:10px;border-radius:4px;padding:4px 6px;margin:0 -6px}
+  .teamrow.win{background:var(--win)}
+  .team{flex:1;display:flex;flex-direction:column;gap:1px;min-width:0}
+  .team p{margin:0;font-weight:500;overflow-wrap:anywhere}
+  input.score{
+    width:54px;flex:none;text-align:center;padding:6px 4px;
+    font-family:"Oswald",Impact,sans-serif;font-size:19px;
+    background:var(--panel-2);border:1px solid var(--line-strong);border-radius:4px;color:var(--ink);
+    font-variant-numeric:tabular-nums;
+  }
+  input.score.flag{border-color:var(--accent);background:var(--pending)}
+  input.score.missing{border-style:dashed;border-color:var(--accent)}
+  input.score::-webkit-outer-spin-button,input.score::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  input.score{-moz-appearance:textfield}
+  .vs{display:flex;align-items:center;gap:9px;margin:6px 0;color:var(--soft);font-family:"Oswald",Impact,sans-serif;font-size:11px;letter-spacing:.16em}
+  .vs::before,.vs::after{content:"";height:1px;background:var(--line);flex:1}
+  .cwarn{font-size:11.5px;color:var(--accent);margin:7px 0 0;min-height:0}
+  .sitting{font-size:13px;color:var(--soft)}
+  .sitting b{color:var(--accent);font-weight:700}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line)}
+  th{font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--soft)}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .scroller{overflow-x:auto}
+  tr.lead td{font-weight:700}
+  td.rank{font-family:"Oswald",Impact,sans-serif;font-size:16px;color:var(--soft);width:34px}
+  tr.lead td.rank{color:var(--accent)}
+
+  .matrix table{border-collapse:separate;border-spacing:2px;font-size:12.5px}
+  .matrix th,.matrix td{border-bottom:0;padding:0}
+  .matrix th.corner{background:transparent}
+  .matrix th.colh{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--soft);text-align:center;padding:0 0 4px;min-width:34px}
+  .matrix th.rowh{
+    position:sticky;left:0;z-index:1;background:var(--panel);text-align:left;white-space:nowrap;
+    padding:0 10px 0 0;font-size:13px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--ink);
+  }
+  .matrix td.cell{
+    width:34px;height:30px;text-align:center;vertical-align:middle;border-radius:3px;
+    font-variant-numeric:tabular-nums;font-weight:700;background:var(--cell-zero);color:var(--soft);
+  }
+  .matrix td.cell.ok{background:var(--cell-ok);color:var(--ink)}
+  .matrix td.cell.rep{background:var(--cell-rep);color:var(--accent)}
+  .matrix td.cell.self{background:transparent;color:var(--line-strong)}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--soft);align-items:center}
+
+  details.fold{display:block}
+  details.fold > summary{
+    font-family:"Oswald",Impact,sans-serif;font-weight:500;font-size:13px;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--soft);
+    cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  }
+  details.fold > summary::-webkit-details-marker{display:none}
+  details.fold > summary::before{
+    content:"\25B8";display:inline-block;transition:transform .15s;color:var(--accent);
+  }
+  details.fold[open] > summary::before{transform:rotate(90deg)}
+  details.fold > summary span{
+    font-family:"Karla",sans-serif;letter-spacing:.02em;text-transform:none;font-size:12.5px;
+  }
+  details.fold[open] > summary{padding-bottom:10px;border-bottom:1px solid var(--line)}
+  details.fold h3{
+    font-family:"Oswald",Impact,sans-serif;font-weight:500;font-size:12px;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin:2px 0 0;
+  }
+  @media (prefers-reduced-motion: reduce){details.fold > summary::before{transition:none}}
+  .swatch{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px}
+
+  .btnrow{display:flex;flex-wrap:wrap;gap:10px}
+  .ghost{
+    font-family:inherit;font-size:13px;font-weight:700;background:transparent;color:var(--ink);
+    border:1px solid var(--line-strong);border-radius:4px;padding:9px 14px;cursor:pointer;
+  }
+  .ghost:hover{background:var(--panel-2)}
+  .foot{color:var(--soft);font-size:12.5px;border-top:1px solid var(--line);padding-top:14px}
+  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <h1>The Pickleball Crew Court Draw</h1>
+    <p class="dek" id="datestamp"></p>
+  </header>
+
+  <section class="panel">
+    <h2>Set up the session</h2>
+
+    <div>
+      <label for="names">Players who turned up &mdash; one per line</label>
+      <textarea id="names" spellcheck="false">Sanket
+Rohit
+Meera
+Arjun
+Priya
+Vikram
+Kavya
+Nikhil
+Anjali</textarea>
+      <p class="hint" id="count">9 players</p>
+    </div>
+
+    <div class="grid3">
+      <div>
+        <label for="courts">Courts available</label>
+        <input type="number" id="courts" min="1" max="8" step="1" value="2">
+      </div>
+      <div>
+        <label for="p15">Target score</label>
+        <div class="seg" id="points" role="group" aria-label="Target score">
+          <button type="button" id="p15" data-pts="15" aria-pressed="true">15</button>
+          <button type="button" id="p21" data-pts="21" aria-pressed="false">21</button>
+        </div>
+      </div>
+      <div>
+        <label for="minutes">Court time (minutes)</label>
+        <input type="number" id="minutes" min="20" max="360" step="15" value="90">
+      </div>
+    </div>
+
+    <div>
+      <label for="mode-am">Format</label>
+      <div class="seg" id="mode" role="group" aria-label="Format">
+        <button type="button" id="mode-am" data-mode="americano" aria-pressed="true">Americano</button>
+        <button type="button" id="mode-mx" data-mode="mexicano" aria-pressed="false">Mexicano</button>
+      </div>
+      <p class="hint" id="modenote"></p>
+    </div>
+
+    <div>
+      <label for="fmt-race">How a game ends</label>
+      <div class="seg" id="fmt" role="group" aria-label="How a game ends">
+        <button type="button" id="fmt-race" data-fmt="race" aria-pressed="true">First to 15</button>
+        <button type="button" id="fmt-deuce" data-fmt="deuce" aria-pressed="false">Win by 2</button>
+        <button type="button" id="fmt-total" data-fmt="total" aria-pressed="false">15 total</button>
+      </div>
+      <p class="hint" id="fmtnote"></p>
+    </div>
+
+    <div id="capwrap" hidden>
+      <label for="cap">Hard stop &mdash; first to this wins outright</label>
+      <input type="number" id="cap" min="2" max="99" step="1" value="17">
+      <p class="hint">At 14&ndash;14 you play on until someone leads by two, but nobody goes past this number.</p>
+    </div>
+
+    <div>
+      <label for="rminus">Rounds that fit</label>
+      <div class="stepper">
+        <button type="button" id="rminus" aria-label="One round fewer">&minus;</button>
+        <div class="val"><b id="rval">7</b><span id="rnote">suggested</span></div>
+        <button type="button" id="rplus" aria-label="One round more">+</button>
+      </div>
+      <p class="hint" id="mathline"></p>
+    </div>
+
+    <button class="go" type="button" id="go">Draw the schedule</button>
+    <p class="warn" id="err" hidden></p>
+    <p class="hint" id="saved"></p>
+  </section>
+
+  <div class="notice" id="example" hidden>
+    <b>Example session.</b> The names and scores below are made up, so you can see how it works. Press <b>Draw the schedule</b> to start your own &mdash; that wipes these scores.
+  </div>
+
+  <div class="summary" id="summary"></div>
+
+  <section id="rounds"></section>
+
+  <div id="nextwrap" hidden>
+    <button class="go" type="button" id="next">Draw the next round</button>
+    <p class="hint" id="nextnote"></p>
+  </div>
+
+  <section class="panel">
+    <h2>Standings <em id="progress"></em></h2>
+    <p class="warn" id="oops" hidden></p>
+    <div class="scroller"><table id="board"></table></div>
+    <p class="hint" id="boardnote"></p>
+    <div><button class="ghost" type="button" id="recount">Recount from the score boxes</button></div>
+  </section>
+
+  <section class="panel">
+    <h2>Sit-out tally</h2>
+    <div class="scroller"><table id="tally"></table></div>
+    <p class="hint">You put partner variety ahead of even sit-outs, so this column can differ by one or two.</p>
+  </section>
+
+  <details class="panel fold" id="organiser">
+    <summary>Organiser view<span>draw quality &amp; who meets whom</span></summary>
+
+    <h3>How this draw turned out</h3>
+    <div class="quality" id="quality"></div>
+    <p class="hint">A check on the schedule itself, not on anyone&rsquo;s play.</p>
+
+    <h3>Who meets whom</h3>
+    <div class="seg" id="mview" role="group" aria-label="Matrix view" style="max-width:340px">
+      <button type="button" data-view="partner" aria-pressed="true">Partnered with</button>
+      <button type="button" data-view="opp" aria-pressed="false">Played against</button>
+    </div>
+    <div class="scroller matrix"><table id="matrix"></table></div>
+    <div class="legend">
+      <span><span class="swatch" style="background:var(--cell-zero)"></span>Never met</span>
+      <span><span class="swatch" style="background:var(--cell-ok)"></span>Once</span>
+      <span><span class="swatch" style="background:var(--cell-rep)"></span>Twice or more</span>
+    </div>
+    <p class="hint" id="mnote"></p>
+  </details>
+
+  <div class="btnrow">
+    <button class="ghost" type="button" id="copy">Copy for WhatsApp</button>
+    <button class="ghost" type="button" id="clear">Clear all scores</button>
+  </div>
+
+  <p class="foot">Draw, scores and standings. The session saves in this browser as you type, so a locked phone or a stray refresh won&rsquo;t lose it. Each person&rsquo;s phone keeps its own copy.</p>
+</div>
+
+<script>
+(function(){
+  var $ = function(s){ return document.querySelector(s); };
+  var CHANGEOVER = 3, MIN_PER_RALLY = 0.36;
+
+  var pts = 15, fmt = 'race', cap = 17, mode = 'americano';
+  var roundsOverride = null, current = null, mview = 'partner';
+  var scores = {}, isExample = true, drawArmed = false, armTimer = null, lastSig = null;
+  var db = null, saveTimer = null, inFlight = 0, editSeq = 0, dirty = false, readOnly = false;
+
+  function sk(r,c){ return 'r' + r + 'c' + c; }
+
+  function prettyDate(iso, withTime){
+    var d = iso ? new Date(iso) : new Date();
+    if(isNaN(d.getTime())) d = new Date();
+    var day;
+    try{ day = d.toLocaleDateString(undefined, { weekday:'long', day:'numeric', month:'long', year:'numeric' }); }
+    catch(e){ return d.toDateString(); }
+    if(!withTime) return day;
+    try{ return day + ' \u00b7 from ' + d.toLocaleTimeString(undefined, { hour:'numeric', minute:'2-digit' }); }
+    catch(e){ return day; }
+  }
+  function esc(s){
+    return String(s).replace(/[&<>"]/g, function(ch){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[ch];
+    });
+  }
+
+  /* ---------- format rules ---------- */
+
+  function rallies(f,p){
+    if(f === 'total') return p;
+    if(f === 'deuce') return Math.round(p*1.75);
+    return Math.round(p*1.6);
+  }
+  function gameMinutes(f,p){ return Math.max(1, Math.round(rallies(f,p)*MIN_PER_RALLY)); }
+  function roundMinutes(f,p){ return gameMinutes(f,p) + CHANGEOVER; }
+
+  /* Returns: 'empty' | 'half' | 'ok' | 'odd', plus a message for 'odd'. */
+  function gameState(s, f, p, capV){
+    var a = s && typeof s.a === 'number' ? s.a : null;
+    var b = s && typeof s.b === 'number' ? s.b : null;
+    if(a === null && b === null) return { state:'empty' };
+    if(a === null || b === null) return { state:'half' };
+    var hi = Math.max(a,b), lo = Math.min(a,b);
+    if(f === 'total'){
+      if(a + b === p) return { state:'ok' };
+      return { state:'odd', msg:'These add up to ' + (a+b) + ', not ' + p + '.' };
+    }
+    if(f === 'deuce'){
+      if(hi > capV) return { state:'odd', msg:'Nobody can pass ' + capV + '.' };
+      if(hi === capV && hi > lo) return { state:'ok' };
+      if(hi >= p && hi - lo >= 2) return { state:'ok' };
+      if(hi >= p) return { state:'odd', msg:'At ' + hi + '–' + lo + ' the lead is under two — play on, or stop at ' + capV + '.' };
+      return { state:'odd', msg:'Nobody reached ' + p + ' yet.' };
+    }
+    if(hi === p && lo < p) return { state:'ok' };
+    return { state:'odd', msg:'Neither side reached ' + p + '.' };
+  }
+
+  /* Given one side's score, what must the other side be? null when the format
+     leaves it genuinely open (you typed the winner's score in a race). */
+  function inferOther(v, f, p, capV){
+    if(v < 0) return null;
+    if(f === 'total') return (v <= p) ? (p - v) : null;
+    if(f === 'race')  return (v < p) ? p : null;
+    if(f === 'deuce'){
+      if(v > capV) return null;
+      if(v === capV) return null;          /* capped win: the loser could be anything close */
+      if(v > p) return v - 2;              /* past the target, a game ends on a two-point lead */
+      if(v === p) return null;             /* you typed the winner's score */
+      if(v === p - 1) return p + 1;        /* level at p-1 means the winner went two clear */
+      return p;                            /* comfortably behind: the winner stopped at the target */
+    }
+    return null;
+  }
+
+  function fmtLabel(f,p,capV){
+    if(f === 'total') return p + ' points shared out';
+    if(f === 'deuce') return 'first to ' + p + ', win by 2, capped at ' + capV;
+    return 'first to ' + p;
+  }
+
+  /* ---------- setup controls ---------- */
+
+  function readNames(){
+    return $('#names').value.split(/[\n,]/)
+      .map(function(s){ return s.trim(); })
+      .filter(function(s){ return s.length > 0; });
+  }
+  function suggestedRounds(){
+    var mins = parseInt($('#minutes').value,10) || 0;
+    return Math.max(1, Math.floor(mins / roundMinutes(fmt, pts)));
+  }
+  function activeRounds(){ return roundsOverride !== null ? roundsOverride : suggestedRounds(); }
+
+  function refreshControls(){
+    var names = readNames();
+    $('#count').textContent = names.length + (names.length===1?' player':' players');
+
+    $('#modenote').textContent = (mode === 'mexicano')
+      ? 'The whole evening cannot be drawn up front: each round is paired from the table, so the leader partners the weakest of their four and games stay close. You draw each round once the previous scores are in.'
+      : 'The full evening is drawn at once, rotating partners so everyone plays with everyone.';
+    $('#fmt-race').textContent = 'First to ' + pts;
+    $('#fmt-total').textContent = pts + ' total';
+    $('#capwrap').hidden = (fmt !== 'deuce');
+
+    $('#fmtnote').textContent =
+      fmt === 'total'
+        ? 'Every game shares out exactly ' + pts + ' points, so 9–6 and 8–7 both total ' + pts + '. Fairest for the leaderboard — everyone gets the same points on offer each game.'
+        : fmt === 'deuce'
+          ? 'First to ' + pts + ', but level scores play on until someone leads by two, stopping at ' + cap + '.'
+          : 'First side to ' + pts + ' takes the game, however far behind the other side is.';
+
+    var r = activeRounds();
+    $('#rval').textContent = r;
+    $('#rnote').textContent = (roundsOverride===null) ? 'suggested' : 'your call';
+    $('#mathline').textContent =
+      '≈' + rallies(fmt,pts) + ' rallies at ~22 sec = ' + gameMinutes(fmt,pts) + ' min of play, plus ' +
+      CHANGEOVER + ' min to change ends and partners → ' + roundMinutes(fmt,pts) + ' min a round. ' +
+      r + ' rounds ≈ ' + Math.round(r*roundMinutes(fmt,pts)) + ' min on court.';
+  }
+
+  /* ---------- the draw ---------- */
+
+  function shuffle(a){
+    for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+    return a;
+  }
+  function key(i,j){ return i<j ? i+'-'+j : j+'-'+i; }
+
+  function generate(n, courts, rounds){
+    var courtsUsed = Math.min(courts, Math.floor(n/4));
+    if(courtsUsed < 1) return null;
+    var sitCount = n - courtsUsed*4;
+    var partner = {}, opp = {}, sits = [];
+    for(var i=0;i<n;i++) sits.push(0);
+    var g = function(m,k){ return m[k] || 0; };
+    var schedule = [];
+
+    for(var r=0;r<rounds;r++){
+      var best = null;
+      for(var t=0;t<700;t++){
+        var scored = [];
+        for(var p=0;p<n;p++) scored.push({ i:p, k: sits[p]*10 + Math.random()*10 });
+        scored.sort(function(a,b){ return a.k-b.k; });
+        var order = scored.map(function(s){ return s.i; });
+        var sitters = order.slice(0, sitCount);
+        var pool = shuffle(order.slice(sitCount));
+
+        var cost = 0, ci;
+        for(ci=0;ci<sitters.length;ci++) cost += 8*sits[sitters[ci]]*sits[sitters[ci]];
+
+        var courtsOut = [];
+        for(var c=0;c<courtsUsed;c++){
+          var q = pool.slice(c*4, c*4+4);
+          var opts = [
+            [[q[0],q[1]],[q[2],q[3]]],
+            [[q[0],q[2]],[q[1],q[3]]],
+            [[q[0],q[3]],[q[1],q[2]]]
+          ];
+          var bo = null;
+          for(var o=0;o<3;o++){
+            var A = opts[o][0], B = opts[o][1];
+            var cc = 1000*( g(partner,key(A[0],A[1])) + g(partner,key(B[0],B[1])) );
+            for(var x=0;x<2;x++) for(var y=0;y<2;y++) cc += 50*g(opp, key(A[x],B[y]));
+            if(!bo || cc < bo.c) bo = { c:cc, o:opts[o] };
+          }
+          cost += bo.c;
+          courtsOut.push(bo.o);
+        }
+        if(!best || cost < best.cost) best = { cost:cost, courtsOut:courtsOut, sitters:sitters.slice() };
+        if(cost === 0) break;
+      }
+
+      for(var k2=0;k2<best.courtsOut.length;k2++){
+        var A2 = best.courtsOut[k2][0], B2 = best.courtsOut[k2][1];
+        partner[key(A2[0],A2[1])] = g(partner,key(A2[0],A2[1])) + 1;
+        partner[key(B2[0],B2[1])] = g(partner,key(B2[0],B2[1])) + 1;
+        for(var x2=0;x2<2;x2++) for(var y2=0;y2<2;y2++){
+          var kk = key(A2[x2],B2[y2]);
+          opp[kk] = g(opp,kk) + 1;
+        }
+      }
+      for(var s2=0;s2<best.sitters.length;s2++) sits[best.sitters[s2]]++;
+      schedule.push({ courts: best.courtsOut, sitters: best.sitters });
+    }
+
+    var pRep = 0, oRep = 0, kx;
+    for(kx in partner) if(partner[kx] > 1) pRep += partner[kx]-1;
+    for(kx in opp) if(opp[kx] > 1) oRep += opp[kx]-1;
+
+    return { schedule: schedule, sits: sits, courtsUsed: courtsUsed,
+             pRep: pRep, oRep: oRep, partner: partner, opp: opp };
+  }
+
+  /* ---------- Mexicano: one round at a time, off the standings ---------- */
+
+  function emptyRes(n, courts){
+    var courtsUsed = Math.min(courts, Math.floor(n/4));
+    if(courtsUsed < 1) return null;
+    var sits = [];
+    for(var i=0;i<n;i++) sits.push(0);
+    return { schedule: [], sits: sits, courtsUsed: courtsUsed,
+             partner: {}, opp: {}, pRep: 0, oRep: 0 };
+  }
+
+  function commitRound(res, rd){
+    var g = function(m,k){ return m[k] || 0; };
+    for(var i=0;i<rd.courts.length;i++){
+      var A = rd.courts[i][0], B = rd.courts[i][1];
+      res.partner[key(A[0],A[1])] = g(res.partner,key(A[0],A[1])) + 1;
+      res.partner[key(B[0],B[1])] = g(res.partner,key(B[0],B[1])) + 1;
+      for(var x=0;x<2;x++) for(var y=0;y<2;y++){
+        var kk = key(A[x],B[y]);
+        res.opp[kk] = g(res.opp,kk) + 1;
+      }
+    }
+    for(var s=0;s<rd.sitters.length;s++) res.sits[rd.sitters[s]]++;
+    res.schedule.push(rd);
+
+    var pRep = 0, oRep = 0, k2;
+    for(k2 in res.partner) if(res.partner[k2] > 1) pRep += res.partner[k2]-1;
+    for(k2 in res.opp) if(res.opp[k2] > 1) oRep += res.opp[k2]-1;
+    res.pRep = pRep; res.oRep = oRep;
+  }
+
+  /* Sit-outs stay on a fair rotation: whoever has sat least goes first,
+     ties broken at random. Ranking decides only who partners whom. */
+  function chooseSitters(res, n, sitCount){
+    var order = [];
+    for(var i=0;i<n;i++) order.push({ i:i, k: res.sits[i]*100 + Math.random() });
+    order.sort(function(a,b){ return a.k - b.k; });
+    return order.slice(0, sitCount).map(function(o){ return o.i; });
+  }
+
+  function mexicanoRound(){
+    var res = current.res, n = current.names.length;
+    var sitCount = n - res.courtsUsed*4;
+    var sitters = chooseSitters(res, n, sitCount);
+    var sitting = {};
+    for(var s=0;s<sitters.length;s++) sitting[sitters[s]] = true;
+
+    var ranked = [], i;
+    if(res.schedule.length === 0){
+      /* No standings yet, so round one is a straight random draw. */
+      for(i=0;i<n;i++) if(!sitting[i]) ranked.push(i);
+      shuffle(ranked);
+    } else {
+      var table = computeTable();
+      for(i=0;i<table.length;i++) if(!sitting[table[i].i]) ranked.push(table[i].i);
+    }
+
+    var courts = [];
+    for(var c=0;c<res.courtsUsed;c++){
+      var q = ranked.slice(c*4, c*4+4);
+      /* 1st with 4th against 2nd and 3rd: the leader carries the weakest
+         of the four, which is what keeps the game close. */
+      courts.push([[q[0],q[3]],[q[1],q[2]]]);
+    }
+    commitRound(res, { courts: courts, sitters: sitters });
+  }
+
+  function lastRoundComplete(){
+    var res = current.res;
+    if(!res.schedule.length) return false;
+    var r = res.schedule.length - 1;
+    for(var c=0;c<res.schedule[r].courts.length;c++){
+      var st = gameState(scores[sk(r,c)], current.fmt, current.pts, current.cap).state;
+      if(st === 'empty' || st === 'half') return false;
+    }
+    return true;
+  }
+
+  function drawNextRound(){
+    if(current.mode !== 'mexicano' || !lastRoundComplete()) return;
+    mexicanoRound();
+    renderHead();
+    renderRounds();
+    renderBoard();
+    renderMatrix();
+    queueSave();
+  }
+
+  function renderNext(){
+    var w = $('#nextwrap');
+    if(!current || current.mode !== 'mexicano'){ w.hidden = true; return; }
+    w.hidden = false;
+    var played = current.res.schedule.length;
+    var btn = $('#next'), note = $('#nextnote');
+    btn.textContent = 'Draw round ' + (played + 1);
+    if(lastRoundComplete()){
+      btn.disabled = false;
+      btn.style.opacity = '';
+      note.textContent = played >= current.rounds
+        ? 'That is the ' + current.rounds + ' rounds your court time allows. Draw another if you are running over.'
+        : 'Standings are up to date, so the next pairings are ready.';
+    } else {
+      btn.disabled = true;
+      btn.style.opacity = '0.45';
+      note.textContent = 'Enter both scores for every court in round ' + played +
+        ' first — Mexicano works out the next pairings from the table.';
+    }
+  }
+
+  /* ---------- rendering ---------- */
+
+  function stat(v,l){ return '<div class="stat"><b>' + v + '</b><span>' + l + '</span></div>'; }
+  function tag(good,txt){ return '<span class="tag' + (good?'':' bad') + '"><span class="dot"></span>' + txt + '</span>'; }
+
+  function renderHead(){
+    var names = current.names, n = names.length, res = current.res, rounds = current.rounds;
+    $('#datestamp').textContent = (current.sid === 'example')
+      ? prettyDate(current.date, false)
+      : 'Session of ' + prettyDate(current.date, true);
+    var mex = current.mode === 'mexicano';
+    $('#summary').innerHTML =
+      stat(n, n===1?'player':'players') +
+      stat(res.courtsUsed, res.courtsUsed===1?'court in use':'courts in use') +
+      stat(mex ? (res.schedule.length + ' / ' + rounds) : rounds, mex ? 'rounds drawn' : 'rounds') +
+      stat(current.pts, 'target score') +
+      stat(Math.round(rounds*roundMinutes(current.fmt, current.pts)), 'minutes on court');
+
+    var q = '';
+    if(mex){
+      q += tag(true, 'Mexicano — pairings follow the standings');
+      if(res.pRep) q += tag(true, res.pRep + ' repeated partner' + (res.pRep===1?'':'s') + ' so far (expected)');
+    } else {
+      q += tag(res.pRep === 0, res.pRep === 0 ? 'No repeated partners' : res.pRep + ' repeated partner' + (res.pRep===1?'':'s'));
+      q += tag(res.oRep === 0, res.oRep === 0 ? 'No repeated opponents' : res.oRep + ' repeated opponent slot' + (res.oRep===1?'':'s'));
+    }
+    var lo = Math.min.apply(null, res.sits), hi = Math.max.apply(null, res.sits);
+    q += tag(hi - lo <= 1, lo === hi ? ('Everyone sits out ' + lo + '×') : ('Sit-outs range ' + lo + '–' + hi + '×'));
+    q += tag(true, fmtLabel(current.fmt, current.pts, current.cap));
+    if(!mex && rounds < n-1) q += tag(true, 'A full rotation needs ' + (n-1) + ' rounds');
+    $('#quality').innerHTML = q;
+  }
+
+  function renderRounds(){
+    var names = current.names, res = current.res, html = '', elapsed = 0;
+    var rm = Math.round(roundMinutes(current.fmt, current.pts));
+    for(var r=0;r<res.schedule.length;r++){
+      var rd = res.schedule[r];
+      var start = elapsed, end = elapsed + rm;
+      elapsed = end;
+      html += '<div class="round"><div class="round-head"><div class="rnum">Round ' + (r+1) + '</div>' +
+              '<div class="rtime">' + start + '–' + end + ' min</div>' +
+              '<div class="rdone" id="done-' + r + '"></div></div><div class="courts">';
+      for(var c=0;c<rd.courts.length;c++){
+        var A = rd.courts[c][0], B = rd.courts[c][1];
+        html += '<div class="court" id="court-' + r + '-' + c + '">' +
+          '<div class="clabel">Court ' + (c+1) + '<span class="state" id="st-' + r + '-' + c + '"></span></div>' +
+          '<div class="teamrow" id="tr-' + r + '-' + c + '-a">' +
+            '<div class="team"><p>' + esc(names[A[0]]) + '</p><p>' + esc(names[A[1]]) + '</p></div>' +
+            '<input class="score" type="number" inputmode="numeric" min="0" max="99" id="s-' + r + '-' + c + '-a"' +
+            ' data-r="' + r + '" data-c="' + c + '" data-side="a" aria-label="Score for ' +
+            esc(names[A[0]]) + ' and ' + esc(names[A[1]]) + '"></div>' +
+          '<div class="vs">V</div>' +
+          '<div class="teamrow" id="tr-' + r + '-' + c + '-b">' +
+            '<div class="team"><p>' + esc(names[B[0]]) + '</p><p>' + esc(names[B[1]]) + '</p></div>' +
+            '<input class="score" type="number" inputmode="numeric" min="0" max="99" id="s-' + r + '-' + c + '-b"' +
+            ' data-r="' + r + '" data-c="' + c + '" data-side="b" aria-label="Score for ' +
+            esc(names[B[0]]) + ' and ' + esc(names[B[1]]) + '"></div>' +
+          '<p class="cwarn" id="cw-' + r + '-' + c + '"></p>' +
+          '</div>';
+      }
+      html += '</div>';
+      if(rd.sitters.length){
+        var sn = rd.sitters.map(function(i){ return esc(names[i]); }).join(', ');
+        html += '<p class="sitting">Sitting out: <b>' + sn + '</b></p>';
+      }
+      html += '</div>';
+    }
+    $('#rounds').innerHTML = html;
+
+    /* Listeners are delegated on the container (wired once at boot), so freshly
+       drawn boxes are always live without re-attaching anything. */
+    paintScores(true);
+  }
+
+  function paintScores(setValues){
+    var res = current.res;
+    /* When we write values in (a fresh draw, or a session arriving from the
+       store), that is not a change the sweep should react to. */
+    if(setValues) setTimeout(function(){ lastSig = boxSignature(); }, 0);
+    for(var r=0;r<res.schedule.length;r++){
+      var rd = res.schedule[r], done = 0, started = 0;
+      for(var c=0;c<rd.courts.length;c++){
+        var s = scores[sk(r,c)] || {};
+        var ia = document.getElementById('s-' + r + '-' + c + '-a');
+        var ib = document.getElementById('s-' + r + '-' + c + '-b');
+        if(!ia || !ib) continue;
+        if(setValues){
+          if(document.activeElement !== ia) ia.value = (typeof s.a === 'number') ? s.a : '';
+          if(document.activeElement !== ib) ib.value = (typeof s.b === 'number') ? s.b : '';
+        }
+        var g = gameState(s, current.fmt, current.pts, current.cap);
+        var both = (g.state !== 'empty' && g.state !== 'half');
+
+        document.getElementById('tr-' + r + '-' + c + '-a').className =
+          'teamrow' + (both && s.a > s.b ? ' win' : '');
+        document.getElementById('tr-' + r + '-' + c + '-b').className =
+          'teamrow' + (both && s.b > s.a ? ' win' : '');
+
+        ia.className = 'score' + (g.state === 'odd' ? ' flag' : '') + (g.state === 'half' && typeof s.a !== 'number' ? ' missing' : '');
+        ib.className = 'score' + (g.state === 'odd' ? ' flag' : '') + (g.state === 'half' && typeof s.b !== 'number' ? ' missing' : '');
+
+        var st = document.getElementById('st-' + r + '-' + c);
+        var cw = document.getElementById('cw-' + r + '-' + c);
+        document.getElementById('court-' + r + '-' + c).className = 'court' + (g.state === 'half' ? ' half' : '');
+        if(g.state === 'half'){
+          st.textContent = 'needs both scores';
+          st.className = 'state half';
+          cw.textContent = 'This game is not counted until the other side’s score is in.';
+          started++;
+        } else if(g.state === 'odd'){
+          st.textContent = 'check this';
+          st.className = 'state half';
+          cw.textContent = g.msg + ' It still counts — this is only a nudge.';
+          done++;
+        } else if(g.state === 'ok'){
+          st.textContent = '';
+          st.className = 'state';
+          cw.textContent = '';
+          done++;
+        } else {
+          st.textContent = '';
+          st.className = 'state';
+          cw.textContent = '';
+        }
+      }
+      var d = document.getElementById('done-' + r);
+      if(d){
+        if(done === rd.courts.length){ d.textContent = 'Done'; d.className = 'rdone'; }
+        else if(started > 0){ d.textContent = started + ' game' + (started===1?'':'s') + ' half entered'; d.className = 'rdone part'; }
+        else { d.textContent = ''; d.className = 'rdone'; }
+      }
+    }
+  }
+
+  function computeTable(){
+    var names = current.names, n = names.length, res = current.res;
+    var rows = [];
+    for(var i=0;i<n;i++) rows.push({ i:i, nm:names[i], pf:0, pa:0, w:0, l:0, gp:0 });
+    for(var r=0;r<res.schedule.length;r++){
+      var rd = res.schedule[r];
+      for(var c=0;c<rd.courts.length;c++){
+        var s = scores[sk(r,c)];
+        if(!s || typeof s.a !== 'number' || typeof s.b !== 'number') continue;
+        var A = rd.courts[c][0], B = rd.courts[c][1], k;
+        for(k=0;k<2;k++){
+          var pa = rows[A[k]];
+          pa.pf += s.a; pa.pa += s.b; pa.gp++;
+          if(s.a > s.b) pa.w++; else if(s.a < s.b) pa.l++;
+        }
+        for(k=0;k<2;k++){
+          var pb = rows[B[k]];
+          pb.pf += s.b; pb.pa += s.a; pb.gp++;
+          if(s.b > s.a) pb.w++; else if(s.b < s.a) pb.l++;
+        }
+      }
+    }
+    rows.sort(function(x,y){
+      return (y.pf - x.pf) || ((y.pf-y.pa) - (x.pf-x.pa)) || (y.w - x.w) || x.nm.localeCompare(y.nm);
+    });
+    return rows;
+  }
+
+  function renderBoard(){
+    var rows = computeTable();
+    var counted = 0, halfDone = 0, total = 0, res = current.res;
+    for(var r=0;r<res.schedule.length;r++){
+      for(var c=0;c<res.schedule[r].courts.length;c++){
+        total++;
+        var g = gameState(scores[sk(r,c)], current.fmt, current.pts, current.cap);
+        if(g.state === 'half') halfDone++;
+        else if(g.state !== 'empty') counted++;
+      }
+    }
+    $('#progress').textContent = counted === 0 && halfDone === 0
+      ? 'no scores in yet'
+      : (counted + ' of ' + total + ' games counted' + (halfDone ? ' · ' + halfDone + ' waiting for a second score' : ''));
+
+    $('#boardnote').textContent = halfDone
+      ? 'A game only counts once both sides have a number — ' + halfDone + ' game' + (halfDone===1?' is':'s are') +
+        ' still missing one, marked in orange below. Ranked on points won; Diff is points won minus points conceded.'
+      : 'Ranked on points won. Diff is points won minus points conceded — it separates two players on the same total.';
+
+    var any = counted > 0;
+    var h = '<tr><th class="rank"></th><th>Player</th><th class="num">Points</th>' +
+            '<th class="num">Conceded</th><th class="num">Diff</th><th class="num">W&ndash;L</th><th class="num">Played</th></tr>';
+    for(var i=0;i<rows.length;i++){
+      var x = rows[i], diff = x.pf - x.pa;
+      var lead = any && i === 0 && x.gp > 0;
+      h += '<tr' + (lead ? ' class="lead"' : '') + '>' +
+           '<td class="rank">' + (any ? (i+1) : '&ndash;') + '</td>' +
+           '<td>' + esc(x.nm) + '</td>' +
+           '<td class="num">' + x.pf + '</td>' +
+           '<td class="num">' + x.pa + '</td>' +
+           '<td class="num">' + (diff > 0 ? '+' : '') + diff + '</td>' +
+           '<td class="num">' + x.w + '&ndash;' + x.l + '</td>' +
+           '<td class="num">' + x.gp + '</td></tr>';
+    }
+    $('#board').innerHTML = h;
+
+    var t = '<tr><th>Player</th><th class="num">Games</th><th class="num">Sit-outs</th></tr>';
+    var tr = current.names.map(function(nm,i){ return { nm:nm, s:res.sits[i], p:res.schedule.length-res.sits[i] }; });
+    tr.sort(function(a,b){ return b.s - a.s || a.nm.localeCompare(b.nm); });
+    for(var j=0;j<tr.length;j++){
+      t += '<tr><td>' + esc(tr[j].nm) + '</td><td class="num">' + tr[j].p + '</td><td class="num">' + tr[j].s + '</td></tr>';
+    }
+    $('#tally').innerHTML = t;
+    renderNext();
+  }
+
+  function shortLabel(nm){
+    var w = nm.trim().split(/\s+/)[0];
+    return w.length > 4 ? w.slice(0,4) : w;
+  }
+
+  function renderMatrix(){
+    if(!current) return;
+    var names = current.names, n = names.length;
+    var map = (mview === 'partner') ? current.res.partner : current.res.opp;
+    var get = function(k){ return map[k] || 0; };
+
+    var h = '<tr><th class="corner"></th>';
+    for(var c=0;c<n;c++) h += '<th class="colh" title="' + esc(names[c]) + '">' + esc(shortLabel(names[c])) + '</th>';
+    h += '</tr>';
+
+    var never = 0, repeats = 0;
+    for(var r=0;r<n;r++){
+      h += '<tr><th class="rowh">' + esc(names[r]) + '</th>';
+      for(var c2=0;c2<n;c2++){
+        if(r === c2){ h += '<td class="cell self">&middot;</td>'; continue; }
+        var v = get(key(r,c2));
+        var cls = v === 0 ? '' : (v === 1 ? ' ok' : ' rep');
+        h += '<td class="cell' + cls + '" title="' + esc(names[r]) + ' &amp; ' + esc(names[c2]) + ': ' + v + '">' +
+             (v === 0 ? '&ndash;' : v) + '</td>';
+      }
+      h += '</tr>';
+      for(var c3=r+1;c3<n;c3++){
+        var vv = get(key(r,c3));
+        if(vv === 0) never++;
+        if(vv > 1) repeats++;
+      }
+    }
+    $('#matrix').innerHTML = h;
+
+    var pairs = n*(n-1)/2;
+    var word = (mview === 'partner') ? 'partnered' : 'faced';
+    $('#mnote').textContent =
+      (pairs - never) + ' of ' + pairs + ' possible pairings have ' + word + ' at least once. ' +
+      never + ' still to meet, ' + repeats + ' met more than once. ' +
+      'The grid is symmetric — read it across a row or down a column, whichever you find easier.';
+  }
+
+  function renderAll(){
+    $('#example').hidden = !isExample;
+    renderHead();
+    renderRounds();
+    renderBoard();
+    renderMatrix();
+  }
+
+  /* ---------- score entry ---------- */
+
+  function parseVal(raw){
+    var t = String(raw == null ? '' : raw).trim();
+    if(t === '') return null;
+    var v = parseInt(t, 10);
+    if(isNaN(v) || v < 0) return null;
+    return Math.min(99, v);
+  }
+
+  /* The boxes on screen ARE the scores. Reading them back on every change means
+     what you can see and what gets counted can never drift apart. */
+  function collectScores(){
+    var out = {}, res = current.res;
+    for(var r=0;r<res.schedule.length;r++){
+      for(var c=0;c<res.schedule[r].courts.length;c++){
+        var ia = document.getElementById('s-' + r + '-' + c + '-a');
+        var ib = document.getElementById('s-' + r + '-' + c + '-b');
+        if(!ia || !ib) continue;
+        var a = parseVal(ia.value), b = parseVal(ib.value);
+        if(a !== null || b !== null) out[sk(r,c)] = { a:a, b:b };
+      }
+    }
+    return out;
+  }
+
+  /* A cheap fingerprint of every box, so a sweep can tell if anything changed. */
+  function boxSignature(){
+    var ins = document.querySelectorAll('input.score'), out = [];
+    for(var i=0;i<ins.length;i++) out.push(ins[i].value);
+    return out.join('|');
+  }
+
+  function syncFromBoxes(save){
+    if(!current) return;
+    var sig = boxSignature();
+    if(sig === lastSig) return;
+    lastSig = sig;
+    try{
+      scores = collectScores();
+      $('#oops').hidden = true;
+      paintScores(false);
+      renderBoard();
+      if(save) queueSave();
+    }catch(err){ showOops(err); }
+  }
+
+  function recount(){
+    lastSig = null;
+    syncFromBoxes(true);
+  }
+
+  function showOops(err){
+    var el = $('#oops');
+    el.textContent = 'Something went wrong updating the table: ' + (err && err.message ? err.message : err) +
+      ' — your scores are still in the boxes. Tell Claude this message.';
+    el.hidden = false;
+  }
+
+  function onScoreInput(el, settled){
+    try{ onScoreInputInner(el, settled); }catch(err){ showOops(err); }
+  }
+
+  function onScoreInputInner(el, settled){
+    var r = +el.getAttribute('data-r'), c = +el.getAttribute('data-c'), side = el.getAttribute('data-side');
+    var k = sk(r,c);
+    if(!scores[k]) scores[k] = { a:null, b:null };
+
+    var v = parseVal(el.value);
+    scores[k][side] = v;
+
+    /* One number is often enough: the format fixes the other. Only ever fill a
+       box that is still empty, and leave it editable. */
+    var other = (side === 'a') ? 'b' : 'a';
+    var otherEl = document.getElementById('s-' + r + '-' + c + '-' + other);
+    /* Only once the number is finished. Mid-typing, the "1" of "15" is not a score. */
+    if(settled && v !== null && otherEl && otherEl.value.trim() === '' && document.activeElement !== otherEl){
+      var implied = inferOther(v, current.fmt, current.pts, current.cap);
+      if(implied !== null){
+        scores[k][other] = implied;
+        otherEl.value = implied;
+      }
+    }
+
+    if(isExample){ isExample = false; $('#example').hidden = true; }
+
+    /* Re-read every box, so the table always reflects the screen. */
+    scores = collectScores();
+    $('#oops').hidden = true;
+
+    paintScores(false);
+    renderBoard();
+    queueSave();
+  }
+
+  /* ---------- storage ---------- */
+
+  function sessionBody(){
+    return {
+      sid: current.sid,
+      names: current.names,
+      pts: current.pts,
+      fmt: current.fmt,
+      cap: current.cap,
+      mode: current.mode,
+      date: current.date,
+      rounds: current.rounds,
+      courtsUsed: current.res.courtsUsed,
+      schedule: current.res.schedule,
+      sits: current.res.sits,
+      partner: current.res.partner,
+      opp: current.res.opp,
+      pRep: current.res.pRep,
+      oRep: current.res.oRep,
+      scores: scores,
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  function note(txt){ $('#saved').textContent = txt; }
+  function busy(){ return dirty || saveTimer !== null || inFlight > 0; }
+
+  var SAVE_KEY = 'pickleball-crew-court-draw';
+
+  function queueSave(){
+    dirty = true;
+    editSeq++;
+    if(readOnly) return;
+    if(saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(function(){
+      saveTimer = null;
+      try{
+        window.localStorage.setItem(SAVE_KEY, JSON.stringify(sessionBody()));
+        dirty = false;
+        note('Saved on this device \u00b7 ' + new Date().toLocaleTimeString());
+      }catch(err){
+        /* Private browsing, blocked storage, a full disk. The scores on screen
+           are untouched either way. */
+        note('This browser will not let the page save \u2014 your scores are on screen, ' +
+             'but do not refresh the page.');
+      }
+    }, 500);
+  }
+
+  function loadSaved(){
+    try{
+      var raw = window.localStorage.getItem(SAVE_KEY);
+      if(!raw) return null;
+      var d = JSON.parse(raw);
+      return (d && d.names && d.schedule) ? d : null;
+    }catch(err){ return null; }
+  }
+
+  function adoptSession(d){
+    current = {
+      sid: d.sid,
+      names: d.names,
+      pts: d.pts,
+      fmt: d.fmt || 'race',
+      cap: d.cap || (d.pts + 2),
+      mode: d.mode || 'americano',
+      date: d.date || d.updatedAt || new Date().toISOString(),
+      rounds: d.rounds,
+      res: {
+        schedule: d.schedule, sits: d.sits, courtsUsed: d.courtsUsed,
+        partner: d.partner || {}, opp: d.opp || {}, pRep: d.pRep || 0, oRep: d.oRep || 0
+      }
+    };
+    scores = d.scores || {};
+    isExample = false;
+    pts = current.pts; fmt = current.fmt; cap = current.cap; mode = current.mode;
+    $('#names').value = d.names.join('\n');
+    $('#courts').value = d.courtsUsed;
+    $('#cap').value = cap;
+    setPressed('#points button', 'data-pts', String(pts));
+    setPressed('#fmt button', 'data-fmt', fmt);
+    setPressed('#mode button', 'data-mode', mode);
+    roundsOverride = d.rounds;
+    refreshControls();
+    renderAll();
+  }
+
+  function setPressed(sel, attr, val){
+    var bs = document.querySelectorAll(sel);
+    for(var i=0;i<bs.length;i++) bs[i].setAttribute('aria-pressed', bs[i].getAttribute(attr) === val ? 'true' : 'false');
+  }
+
+  /* ---------- actions ---------- */
+
+  /* Drawing again throws away every score. Never do that on a single click. */
+  function requestDraw(){
+    var filled = 0;
+    for(var k in scores){
+      if(scores[k] && (typeof scores[k].a === 'number' || typeof scores[k].b === 'number')) filled++;
+    }
+    if(filled === 0 || isExample || drawArmed){ drawArmed = false; resetGo(); draw(); return; }
+    drawArmed = true;
+    $('#go').textContent = 'This wipes ' + filled + ' score' + (filled===1?'':'s') + ' — press again to redraw';
+    $('#go').style.background = 'var(--accent)';
+    if(armTimer) clearTimeout(armTimer);
+    armTimer = setTimeout(resetGo, 6000);
+  }
+
+  function resetGo(){
+    drawArmed = false;
+    if(armTimer){ clearTimeout(armTimer); armTimer = null; }
+    $('#go').textContent = 'Draw the schedule';
+    $('#go').style.background = '';
+  }
+
+  function draw(){
+    var names = readNames();
+    var courts = parseInt($('#courts').value,10) || 1;
+    var rounds = activeRounds();
+    var err = $('#err');
+
+    if(names.length < 4){
+      err.textContent = 'Add at least 4 players — a doubles court needs four.';
+      err.hidden = false; return;
+    }
+    var seen = {}, dup = null;
+    for(var i=0;i<names.length;i++){
+      var lc = names[i].toLowerCase();
+      if(seen[lc]){ dup = names[i]; break; }
+      seen[lc] = true;
+    }
+    if(dup){
+      err.textContent = 'Two players are both called “' + dup + '”. Add a surname or initial so the draw can tell them apart.';
+      err.hidden = false; return;
+    }
+    if(fmt === 'deuce' && cap <= pts){
+      err.textContent = 'The hard stop must be above the target score — try ' + (pts+2) + '.';
+      err.hidden = false; return;
+    }
+    var res = (mode === 'mexicano')
+      ? emptyRes(names.length, courts)
+      : generate(names.length, courts, rounds);
+    if(!res){
+      err.textContent = 'Not enough players for a court. You need 4.';
+      err.hidden = false; return;
+    }
+    err.hidden = true;
+
+    current = { sid: String(Date.now()), names: names, pts: pts, fmt: fmt, cap: cap,
+                rounds: rounds, mode: mode, date: new Date().toISOString(), res: res };
+    scores = {};
+    isExample = false;
+    if(mode === 'mexicano') mexicanoRound();   /* round one, drawn at random */
+    renderAll();
+    queueSave();
+  }
+
+  function clearScores(){
+    if(!current) return;
+    scores = {};
+    isExample = false;
+    $('#example').hidden = true;
+    paintScores(true);
+    renderBoard();
+    queueSave();
+  }
+
+  function asText(){
+    if(!current) return '';
+    var L = ['*The Pickleball Crew* — ' + prettyDate(current.date, false),
+             (current.mode === 'mexicano' ? 'Mexicano' : 'Americano') + ' — ' + current.names.length + ' players, ' + current.res.courtsUsed +
+             ' court' + (current.res.courtsUsed===1?'':'s') + ', ' + current.rounds + ' rounds, ' +
+             fmtLabel(current.fmt, current.pts, current.cap), ''];
+    for(var r=0;r<current.res.schedule.length;r++){
+      var rd = current.res.schedule[r];
+      L.push('ROUND ' + (r+1));
+      for(var c=0;c<rd.courts.length;c++){
+        var A = rd.courts[c][0], B = rd.courts[c][1];
+        var s = scores[sk(r,c)] || {};
+        var sc = (typeof s.a === 'number' && typeof s.b === 'number') ? ('   ' + s.a + '-' + s.b) : '';
+        L.push('  C' + (c+1) + ': ' + current.names[A[0]] + ' & ' + current.names[A[1]] +
+               '  v  ' + current.names[B[0]] + ' & ' + current.names[B[1]] + sc);
+      }
+      if(rd.sitters.length) L.push('  Sitting: ' + rd.sitters.map(function(i){ return current.names[i]; }).join(', '));
+      L.push('');
+    }
+    var rows = computeTable();
+    if(rows.length && rows[0].gp > 0){
+      L.push('*STANDINGS*');
+      for(var i=0;i<rows.length;i++){
+        L.push('  ' + (i+1) + '. ' + rows[i].nm + ' — ' + rows[i].pf + ' pts (' + rows[i].w + 'W ' + rows[i].l + 'L)');
+      }
+    }
+    return L.join('\n');
+  }
+
+  function exampleScores(){
+    var res = current.res, seed = 7;
+    var rnd = function(){ seed = (seed*1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+    var stop = Math.ceil(res.schedule.length * 0.6);
+    for(var r=0;r<stop;r++){
+      for(var c=0;c<res.schedule[r].courts.length;c++){
+        var loser;
+        if(current.fmt === 'total'){
+          loser = Math.floor(rnd()*(current.pts - 3)) + 2;
+          scores[sk(r,c)] = (rnd() > 0.5)
+            ? { a: current.pts - loser, b: loser }
+            : { a: loser, b: current.pts - loser };
+        } else {
+          loser = Math.floor(rnd()*(current.pts - 3)) + 2;
+          scores[sk(r,c)] = (rnd() > 0.5) ? { a: current.pts, b: loser } : { a: loser, b: current.pts };
+        }
+      }
+    }
+  }
+
+  /* ---------- wiring ---------- */
+
+  $('#names').addEventListener('input', refreshControls);
+  $('#minutes').addEventListener('input', function(){ roundsOverride = null; refreshControls(); });
+  $('#courts').addEventListener('input', refreshControls);
+  $('#cap').addEventListener('input', function(){
+    cap = parseInt($('#cap').value,10) || (pts + 2);
+    refreshControls();
+    if(current && current.fmt === 'deuce'){
+      current.cap = cap;
+      paintScores(false);
+      renderBoard();
+    }
+  });
+
+  var segBtns = document.querySelectorAll('#points button');
+  for(var b=0;b<segBtns.length;b++){
+    segBtns[b].addEventListener('click', function(e){
+      pts = parseInt(e.currentTarget.getAttribute('data-pts'),10);
+      setPressed('#points button','data-pts',String(pts));
+      cap = pts + 2;
+      $('#cap').value = cap;
+      roundsOverride = null;
+      refreshControls();
+    });
+  }
+
+  var modeBtns = document.querySelectorAll('#mode button');
+  for(var mo=0; mo<modeBtns.length; mo++){
+    modeBtns[mo].addEventListener('click', function(e){
+      mode = e.currentTarget.getAttribute('data-mode');
+      setPressed('#mode button','data-mode',mode);
+      refreshControls();
+    });
+  }
+
+  var fmtBtns = document.querySelectorAll('#fmt button');
+  for(var f=0;f<fmtBtns.length;f++){
+    fmtBtns[f].addEventListener('click', function(e){
+      fmt = e.currentTarget.getAttribute('data-fmt');
+      setPressed('#fmt button','data-fmt',fmt);
+      roundsOverride = null;
+      refreshControls();
+    });
+  }
+
+  $('#rminus').addEventListener('click', function(){ roundsOverride = Math.max(1, activeRounds() - 1); refreshControls(); });
+  $('#rplus').addEventListener('click', function(){ roundsOverride = Math.min(30, activeRounds() + 1); refreshControls(); });
+
+  var mBtns = document.querySelectorAll('#mview button');
+  for(var m=0;m<mBtns.length;m++){
+    mBtns[m].addEventListener('click', function(e){
+      mview = e.currentTarget.getAttribute('data-view');
+      setPressed('#mview button','data-view',mview);
+      renderMatrix();
+    });
+  }
+
+  $('#go').addEventListener('click', requestDraw);
+  $('#clear').addEventListener('click', clearScores);
+  $('#recount').addEventListener('click', recount);
+  $('#next').addEventListener('click', drawNextRound);
+
+  /* Belt and braces on picking up a typed score.
+     1. One delegated listener on the container, in the capture phase, covering
+        every event a score box can raise — including blur, which does not bubble.
+        Delegation means it works for boxes that do not exist yet.
+     2. A sweep on a timer that compares what the boxes say with what was last
+        counted. Whatever a given phone or keyboard does or does not fire, the
+        table cannot sit stale for more than a second. */
+  var roundsEl = $('#rounds');
+  var listen = function(type, settled){
+    roundsEl.addEventListener(type, function(e){
+      var t = e.target;
+      if(!t || t.tagName !== 'INPUT' || String(t.className).indexOf('score') === -1) return;
+      setTimeout(function(){ onScoreInput(t, settled); lastSig = boxSignature(); }, 0);
+    }, true);
+  };
+  listen('input', false);     /* every keystroke: count it, but do not guess the other side yet */
+  listen('keyup', false);
+  listen('paste', false);
+  listen('change', true);     /* finished: now the other side can be filled in */
+  listen('blur', true);
+  setInterval(function(){ syncFromBoxes(true); }, 900);
+
+  $('#copy').addEventListener('click', function(e){
+    var btn = e.currentTarget, txt = asText();
+    var done = function(ok){
+      btn.textContent = ok ? 'Copied — paste into the group' : 'Couldn’t copy — select the text above';
+      setTimeout(function(){ btn.textContent = 'Copy for WhatsApp'; }, 2600);
+    };
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(function(){ done(true); }, function(){ done(false); });
+      } else { done(false); }
+    }catch(err){ done(false); }
+  });
+
+  /* ---------- boot ---------- */
+
+  refreshControls();
+  (function boot(){
+    var names = readNames();
+    var res = generate(names.length, 2, activeRounds());
+    current = { sid: 'example', names: names, pts: pts, fmt: fmt, cap: cap,
+                rounds: activeRounds(), mode: 'americano', date: new Date().toISOString(), res: res };
+    scores = {};
+    isExample = true;
+    exampleScores();
+    renderAll();
+  })();
+
+  /* Pick up where this device left off. */
+  (function restore(){
+    var saved = loadSaved();
+    if(saved) adoptSession(saved);
+  })();
+
+})();
+</script>
+
+</body>
+</html>
