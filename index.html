@@ -261,6 +261,8 @@
     border:1px solid var(--line-strong);border-radius:4px;padding:9px 14px;cursor:pointer;
   }
   .ghost:hover{background:var(--panel-2)}
+  .ghost.share{border-color:var(--court);color:var(--court);font-weight:700}
+  .ghost.share:hover{background:var(--cell-ok)}
   .foot{color:var(--soft);font-size:12.5px;border-top:1px solid var(--line);padding-top:14px}
   @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -398,9 +400,12 @@ Anjali</textarea>
   </details>
 
   <div class="btnrow">
-    <button class="ghost" type="button" id="copy">Copy for WhatsApp</button>
+    <button class="ghost share" type="button" id="shareSched">Share schedule</button>
+    <button class="ghost share" type="button" id="shareBoard">Share standings</button>
+    <button class="ghost" type="button" id="copy">Copy as text</button>
     <button class="ghost" type="button" id="clear">Clear all scores</button>
   </div>
+  <p class="hint" id="sharenote"></p>
 
   <p class="foot">Draw, scores and standings. The session saves in this browser as you type, so a locked phone or a stray refresh won&rsquo;t lose it. Each person&rsquo;s phone keeps its own copy.</p>
 </div>
@@ -1281,6 +1286,214 @@ Anjali</textarea>
     }
   }
 
+
+  /* ---------- picture versions, for the group chat ---------- */
+
+  var IMG = {
+    w: 1080, pad: 56,
+    bg:'#fbfcf9', ink:'#17241e', soft:'#5d6c63', line:'#d3dacd',
+    court:'#2f6b4f', accent:'#c4501f', win:'#dcebe1'
+  };
+  var OSW = 'Oswald, Impact, sans-serif';
+  var KAR = 'Karla, Helvetica, Arial, sans-serif';
+
+  function fit(ctx, text, maxW){
+    if(ctx.measureText(text).width <= maxW) return text;
+    var t = text;
+    while(t.length > 1 && ctx.measureText(t + '…').width > maxW) t = t.slice(0, -1);
+    return t + '…';
+  }
+
+  function headerBlock(ctx, subtitle){
+    var x = IMG.pad, y = 92;
+    ctx.fillStyle = IMG.ink;
+    ctx.font = '600 50px ' + OSW;
+    ctx.fillText('THE PICKLEBALL CREW', x, y);
+    y += 46;
+    ctx.fillStyle = IMG.soft;
+    ctx.font = '400 28px ' + KAR;
+    ctx.fillText(prettyDate(current.date, false), x, y);
+    y += 38;
+    ctx.fillStyle = IMG.court;
+    ctx.font = '700 26px ' + KAR;
+    ctx.fillText(subtitle, x, y);
+    y += 34;
+    ctx.strokeStyle = IMG.line; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(IMG.w - IMG.pad, y); ctx.stroke();
+    return y + 46;
+  }
+
+  function scheduleCanvas(){
+    var res = current.res, rows = res.schedule.length;
+    var h = 250;
+    for(var r=0;r<rows;r++){
+      h += 56 + res.schedule[r].courts.length * 74;
+      if(res.schedule[r].sitters.length) h += 44;
+      h += (r === 0 ? 34 : 34) + (r > 0 ? 24 : 0);
+    }
+    h += 40;
+
+    var c = document.createElement('canvas');
+    c.width = IMG.w; c.height = h;
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = IMG.bg; ctx.fillRect(0,0,IMG.w,h);
+    ctx.textBaseline = 'alphabetic';
+
+    var sub = (current.mode === 'mexicano' ? 'Mexicano' : 'Americano') + ' · ' +
+              current.names.length + ' players · ' + res.courtsUsed +
+              (res.courtsUsed===1?' court':' courts') + ' · ' +
+              fmtLabel(current.fmt, current.pts, current.cap);
+    var y = headerBlock(ctx, sub);
+    var x = IMG.pad, rm = Math.round(roundMinutes(current.fmt, current.pts)), elapsed = 0;
+
+    for(var r2=0;r2<rows;r2++){
+      var rd = res.schedule[r2];
+      if(r2 > 0){
+        ctx.strokeStyle = IMG.line; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(IMG.pad, y - 32); ctx.lineTo(IMG.w - IMG.pad, y - 32); ctx.stroke();
+        y += 24;
+      }
+      ctx.fillStyle = IMG.ink;
+      ctx.font = '500 34px ' + OSW;
+      ctx.fillText('ROUND ' + (r2+1), x, y);
+      ctx.fillStyle = IMG.soft;
+      ctx.font = '400 24px ' + KAR;
+      var t = elapsed + '–' + (elapsed + rm) + ' min';
+      ctx.fillText(t, IMG.w - IMG.pad - ctx.measureText(t).width, y);
+      elapsed += rm;
+      y += 46;
+
+      for(var cc=0;cc<rd.courts.length;cc++){
+        var A = rd.courts[cc][0], B = rd.courts[cc][1];
+        ctx.fillStyle = IMG.court;
+        ctx.font = '700 22px ' + KAR;
+        ctx.fillText('C' + (cc+1), x, y + 30);
+        ctx.fillStyle = IMG.ink;
+        ctx.font = '400 30px ' + KAR;
+        var left  = current.names[A[0]] + ' & ' + current.names[A[1]];
+        var right = current.names[B[0]] + ' & ' + current.names[B[1]];
+        var colW = (IMG.w - IMG.pad*2 - 70 - 60) / 2;
+        ctx.fillText(fit(ctx, left, colW), x + 60, y + 30);
+        ctx.fillStyle = IMG.soft;
+        ctx.font = '500 24px ' + OSW;
+        ctx.fillText('V', x + 60 + colW + 14, y + 30);
+        ctx.fillStyle = IMG.ink;
+        ctx.font = '400 30px ' + KAR;
+        ctx.fillText(fit(ctx, right, colW), x + 60 + colW + 60, y + 30);
+        y += 74;
+      }
+      if(rd.sitters.length){
+        ctx.fillStyle = IMG.accent;
+        ctx.font = '400 26px ' + KAR;
+        var names = rd.sitters.map(function(i){ return current.names[i]; }).join(', ');
+        ctx.fillText(fit(ctx, 'Sitting out: ' + names, IMG.w - IMG.pad*2), x + 60, y + 24);
+        y += 44;
+      }
+      y += 34;
+    }
+    return c;
+  }
+
+  function standingsCanvas(){
+    var rows = computeTable(), n = rows.length;
+    var h = 250 + 56 + n*58 + 70;
+    var c = document.createElement('canvas');
+    c.width = IMG.w; c.height = h;
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = IMG.bg; ctx.fillRect(0,0,IMG.w,h);
+
+    var counted = 0, total = 0, res = current.res;
+    for(var r=0;r<res.schedule.length;r++){
+      for(var cc=0;cc<res.schedule[r].courts.length;cc++){
+        total++;
+        var st = gameState(scores[sk(r,cc)], current.fmt, current.pts, current.cap).state;
+        if(st !== 'empty' && st !== 'half') counted++;
+      }
+    }
+    var y = headerBlock(ctx, 'Standings · ' + counted + ' of ' + total + ' games counted');
+
+    var x = IMG.pad;
+    var colRank = x, colName = x + 70, colPts = 640, colDiff = 790, colWL = 920, colGP = 1024;
+    ctx.fillStyle = IMG.soft;
+    ctx.font = '700 20px ' + KAR;
+    ctx.fillText('#', colRank, y);
+    ctx.fillText('PLAYER', colName, y);
+    var rt = function(txt, right){ ctx.fillText(txt, right - ctx.measureText(txt).width, y); };
+    rt('POINTS', colPts); rt('DIFF', colDiff); rt('W–L', colWL); rt('GP', colGP);
+    y += 18;
+    ctx.strokeStyle = IMG.line; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(IMG.w - IMG.pad, y); ctx.stroke();
+    y += 44;
+
+    for(var i=0;i<n;i++){
+      var p = rows[i], diff = p.pf - p.pa, lead = (i === 0 && counted > 0 && p.gp > 0);
+      if(lead){ ctx.fillStyle = IMG.win; ctx.fillRect(x - 16, y - 34, IMG.w - IMG.pad*2 + 32, 52); }
+      ctx.fillStyle = lead ? IMG.accent : IMG.soft;
+      ctx.font = '500 28px ' + OSW;
+      ctx.fillText(counted ? String(i+1) : '–', colRank, y);
+      ctx.fillStyle = IMG.ink;
+      ctx.font = (lead ? '700 30px ' : '400 30px ') + KAR;
+      ctx.fillText(fit(ctx, p.nm, 520), colName, y);
+      ctx.font = (lead ? '700 30px ' : '400 30px ') + KAR;
+      var r2 = function(txt, right){ ctx.fillText(txt, right - ctx.measureText(txt).width, y); };
+      r2(String(p.pf), colPts);
+      r2((diff > 0 ? '+' : '') + diff, colDiff);
+      r2(p.w + '–' + p.l, colWL);
+      ctx.fillStyle = IMG.soft;
+      r2(String(p.gp), colGP);
+      y += 58;
+    }
+    return c;
+  }
+
+  function shareCanvas(canvas, filename, title, btn, original){
+    var done = function(msg){
+      btn.textContent = msg;
+      setTimeout(function(){ btn.textContent = original; }, 2600);
+    };
+    canvas.toBlob(function(blob){
+      if(!blob){ done('Could not make the image'); return; }
+      var file = null;
+      try{ file = new File([blob], filename, { type:'image/png' }); }catch(e){}
+      if(file && navigator.share && navigator.canShare && navigator.canShare({ files:[file] })){
+        navigator.share({ files:[file], title: title }).then(function(){
+          done('Shared');
+        }, function(err){
+          /* A cancelled share sheet is not a failure. */
+          if(err && err.name === 'AbortError'){ btn.textContent = original; return; }
+          downloadBlob(blob, filename, done);
+        });
+      } else {
+        downloadBlob(blob, filename, done);
+      }
+    }, 'image/png');
+  }
+
+  function downloadBlob(blob, filename, done){
+    try{
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click();
+      setTimeout(function(){ URL.revokeObjectURL(url); a.parentNode.removeChild(a); }, 1500);
+      done('Saved — attach it yourself');
+      $('#sharenote').textContent = 'This browser will not hand pictures straight to WhatsApp, so the image was saved to your downloads instead. On a phone it shares in one tap.';
+    }catch(e){ done('Could not save the image'); }
+  }
+
+  function withFonts(fn){
+    if(document.fonts && document.fonts.ready && document.fonts.ready.then){
+      document.fonts.ready.then(fn, fn);
+    } else { fn(); }
+  }
+
+  function dateSlug(){
+    var d = current.date ? new Date(current.date) : new Date();
+    if(isNaN(d.getTime())) d = new Date();
+    var p = function(v){ return (v < 10 ? '0' : '') + v; };
+    return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate());
+  }
+
   /* ---------- wiring ---------- */
 
   $('#names').addEventListener('input', refreshControls);
@@ -1366,11 +1579,33 @@ Anjali</textarea>
   listen('blur', true);
   setInterval(function(){ syncFromBoxes(true); }, 900);
 
+  $('#shareSched').addEventListener('click', function(e){
+    var btn = e.currentTarget, label = 'Share schedule';
+    btn.textContent = 'Drawing\u2026';
+    withFonts(function(){
+      try{
+        shareCanvas(scheduleCanvas(), 'pickleball-schedule-' + dateSlug() + '.png',
+                    'Court schedule', btn, label);
+      }catch(err){ btn.textContent = label; showOops(err); }
+    });
+  });
+
+  $('#shareBoard').addEventListener('click', function(e){
+    var btn = e.currentTarget, label = 'Share standings';
+    btn.textContent = 'Drawing\u2026';
+    withFonts(function(){
+      try{
+        shareCanvas(standingsCanvas(), 'pickleball-standings-' + dateSlug() + '.png',
+                    'Standings', btn, label);
+      }catch(err){ btn.textContent = label; showOops(err); }
+    });
+  });
+
   $('#copy').addEventListener('click', function(e){
     var btn = e.currentTarget, txt = asText();
     var done = function(ok){
       btn.textContent = ok ? 'Copied — paste into the group' : 'Couldn’t copy — select the text above';
-      setTimeout(function(){ btn.textContent = 'Copy for WhatsApp'; }, 2600);
+      setTimeout(function(){ btn.textContent = 'Copy as text'; }, 2600);
     };
     try{
       if(navigator.clipboard && navigator.clipboard.writeText){
