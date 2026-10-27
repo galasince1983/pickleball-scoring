@@ -1305,19 +1305,19 @@ Anjali</textarea>
   }
 
   function headerBlock(ctx, subtitle){
-    var x = IMG.pad, y = 92;
+    var x = IMG.pad, y = 108;
     ctx.fillStyle = IMG.ink;
-    ctx.font = '600 50px ' + OSW;
+    ctx.font = '600 66px ' + OSW;
     ctx.fillText('THE PICKLEBALL CREW', x, y);
-    y += 46;
+    y += 58;
     ctx.fillStyle = IMG.soft;
-    ctx.font = '400 28px ' + KAR;
+    ctx.font = '400 36px ' + KAR;
     ctx.fillText(prettyDate(current.date, false), x, y);
-    y += 38;
+    y += 50;
     ctx.fillStyle = IMG.court;
-    ctx.font = '700 26px ' + KAR;
+    ctx.font = '700 34px ' + KAR;
     ctx.fillText(subtitle, x, y);
-    y += 34;
+    y += 42;
     ctx.strokeStyle = IMG.line; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(IMG.w - IMG.pad, y); ctx.stroke();
     return y + 46;
@@ -1325,13 +1325,11 @@ Anjali</textarea>
 
   function scheduleCanvas(){
     var res = current.res, rows = res.schedule.length;
-    var h = 250;
+    var h = 300;
     for(var r=0;r<rows;r++){
-      h += 56 + res.schedule[r].courts.length * 74;
-      if(res.schedule[r].sitters.length) h += 44;
-      h += (r === 0 ? 34 : 34) + (r > 0 ? 24 : 0);
+      h += 64 + res.schedule[r].courts.length * 84 + 26 + (r > 0 ? 20 : 0);
     }
-    h += 40;
+    h += 30;
 
     var c = document.createElement('canvas');
     c.width = IMG.w; c.height = h;
@@ -1344,59 +1342,56 @@ Anjali</textarea>
               (res.courtsUsed===1?' court':' courts') + ' · ' +
               fmtLabel(current.fmt, current.pts, current.cap);
     var y = headerBlock(ctx, sub);
-    var x = IMG.pad, rm = Math.round(roundMinutes(current.fmt, current.pts)), elapsed = 0;
+    var x = IMG.pad;
 
     for(var r2=0;r2<rows;r2++){
       var rd = res.schedule[r2];
       if(r2 > 0){
         ctx.strokeStyle = IMG.line; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(IMG.pad, y - 32); ctx.lineTo(IMG.w - IMG.pad, y - 32); ctx.stroke();
-        y += 24;
+        ctx.beginPath(); ctx.moveTo(IMG.pad, y - 30); ctx.lineTo(IMG.w - IMG.pad, y - 30); ctx.stroke();
+        y += 20;
       }
       ctx.fillStyle = IMG.ink;
-      ctx.font = '500 34px ' + OSW;
-      ctx.fillText('ROUND ' + (r2+1), x, y);
-      ctx.fillStyle = IMG.soft;
-      ctx.font = '400 24px ' + KAR;
-      var t = elapsed + '–' + (elapsed + rm) + ' min';
-      ctx.fillText(t, IMG.w - IMG.pad - ctx.measureText(t).width, y);
-      elapsed += rm;
-      y += 46;
+      ctx.font = '500 46px ' + OSW;
+      var head = 'ROUND ' + (r2+1);
+      ctx.fillText(head, x, y);
+      if(rd.sitters.length){
+        var headW = ctx.measureText(head).width;
+        ctx.fillStyle = IMG.accent;
+        ctx.font = '400 34px ' + KAR;
+        var sit = 'Sitting out: ' + rd.sitters.map(function(i){ return current.names[i]; }).join(', ');
+        sit = fit(ctx, sit, IMG.w - IMG.pad*2 - headW - 40);
+        ctx.fillText(sit, IMG.w - IMG.pad - ctx.measureText(sit).width, y);
+      }
+      y += 64;
 
       for(var cc=0;cc<rd.courts.length;cc++){
         var A = rd.courts[cc][0], B = rd.courts[cc][1];
         ctx.fillStyle = IMG.court;
-        ctx.font = '700 22px ' + KAR;
-        ctx.fillText('C' + (cc+1), x, y + 30);
+        ctx.font = '700 28px ' + KAR;
+        ctx.fillText('C' + (cc+1), x, y + 34);
         ctx.fillStyle = IMG.ink;
-        ctx.font = '400 30px ' + KAR;
+        ctx.font = '400 40px ' + KAR;
         var left  = current.names[A[0]] + ' & ' + current.names[A[1]];
         var right = current.names[B[0]] + ' & ' + current.names[B[1]];
-        var colW = (IMG.w - IMG.pad*2 - 70 - 60) / 2;
-        ctx.fillText(fit(ctx, left, colW), x + 60, y + 30);
+        var colW = (IMG.w - IMG.pad*2 - 76 - 68) / 2;
+        ctx.fillText(fit(ctx, left, colW), x + 76, y + 34);
         ctx.fillStyle = IMG.soft;
-        ctx.font = '500 24px ' + OSW;
-        ctx.fillText('V', x + 60 + colW + 14, y + 30);
+        ctx.font = '500 30px ' + OSW;
+        ctx.fillText('V', x + 76 + colW + 18, y + 34);
         ctx.fillStyle = IMG.ink;
-        ctx.font = '400 30px ' + KAR;
-        ctx.fillText(fit(ctx, right, colW), x + 60 + colW + 60, y + 30);
-        y += 74;
+        ctx.font = '400 40px ' + KAR;
+        ctx.fillText(fit(ctx, right, colW), x + 76 + colW + 68, y + 34);
+        y += 84;
       }
-      if(rd.sitters.length){
-        ctx.fillStyle = IMG.accent;
-        ctx.font = '400 26px ' + KAR;
-        var names = rd.sitters.map(function(i){ return current.names[i]; }).join(', ');
-        ctx.fillText(fit(ctx, 'Sitting out: ' + names, IMG.w - IMG.pad*2), x + 60, y + 24);
-        y += 44;
-      }
-      y += 34;
+      y += 26;
     }
     return c;
   }
 
   function standingsCanvas(){
     var rows = computeTable(), n = rows.length;
-    var h = 250 + 56 + n*58 + 70;
+    var h = 300 + 72 + n*76 + 60;
     var c = document.createElement('canvas');
     c.width = IMG.w; c.height = h;
     var ctx = c.getContext('2d');
@@ -1413,35 +1408,35 @@ Anjali</textarea>
     var y = headerBlock(ctx, 'Standings · ' + counted + ' of ' + total + ' games counted');
 
     var x = IMG.pad;
-    var colRank = x, colName = x + 70, colPts = 640, colDiff = 790, colWL = 920, colGP = 1024;
+    var colRank = x, colName = x + 84, colPts = 628, colDiff = 790, colWL = 940, colGP = 1024;
     ctx.fillStyle = IMG.soft;
-    ctx.font = '700 20px ' + KAR;
+    ctx.font = '700 26px ' + KAR;
     ctx.fillText('#', colRank, y);
     ctx.fillText('PLAYER', colName, y);
     var rt = function(txt, right){ ctx.fillText(txt, right - ctx.measureText(txt).width, y); };
     rt('POINTS', colPts); rt('DIFF', colDiff); rt('W–L', colWL); rt('GP', colGP);
-    y += 18;
+    y += 26;
     ctx.strokeStyle = IMG.line; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(IMG.w - IMG.pad, y); ctx.stroke();
-    y += 44;
+    y += 60;
 
     for(var i=0;i<n;i++){
       var p = rows[i], diff = p.pf - p.pa, lead = (i === 0 && counted > 0 && p.gp > 0);
-      if(lead){ ctx.fillStyle = IMG.win; ctx.fillRect(x - 16, y - 34, IMG.w - IMG.pad*2 + 32, 52); }
+      if(lead){ ctx.fillStyle = IMG.win; ctx.fillRect(x - 18, y - 46, IMG.w - IMG.pad*2 + 36, 68); }
       ctx.fillStyle = lead ? IMG.accent : IMG.soft;
-      ctx.font = '500 28px ' + OSW;
+      ctx.font = '500 38px ' + OSW;
       ctx.fillText(counted ? String(i+1) : '–', colRank, y);
       ctx.fillStyle = IMG.ink;
-      ctx.font = (lead ? '700 30px ' : '400 30px ') + KAR;
-      ctx.fillText(fit(ctx, p.nm, 520), colName, y);
-      ctx.font = (lead ? '700 30px ' : '400 30px ') + KAR;
+      ctx.font = (lead ? '700 40px ' : '400 40px ') + KAR;
+      ctx.fillText(fit(ctx, p.nm, 500), colName, y);
+      ctx.font = (lead ? '700 40px ' : '400 40px ') + KAR;
       var r2 = function(txt, right){ ctx.fillText(txt, right - ctx.measureText(txt).width, y); };
       r2(String(p.pf), colPts);
       r2((diff > 0 ? '+' : '') + diff, colDiff);
       r2(p.w + '–' + p.l, colWL);
       ctx.fillStyle = IMG.soft;
       r2(String(p.gp), colGP);
-      y += 58;
+      y += 76;
     }
     return c;
   }
